@@ -24,6 +24,19 @@ interface MoodEntry {
   mood: number; // 1-5 scale
   note?: string;
 }
+
+interface EmergencyContact {
+  name: string;
+  phone: string;
+  description: string;
+  url?: string;
+}
+
+interface RegionSupport {
+  crisis: EmergencyContact;
+  addiction: EmergencyContact;
+}
+
 export default function RecoveryTracker() {
   const [habits, setHabits] = useState<Habit[]>([
     { id: '1', name: 'Morning Meditation', category: 'mindfulness', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
@@ -443,28 +456,40 @@ export default function RecoveryTracker() {
 
         {/* Emergency Support */}
         <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl shadow-lg p-6 text-white">
-          <h3 className="text-xl font-bold mb-4">Need Support?</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold">Need Support?</h3>
+            <select
+              value={userRegion}
+              onChange={(e) => setUserRegion(e.target.value)}
+              className="px-3 py-1 bg-white/20 text-white rounded-lg border border-white/30 text-sm"
+            >
+              <option value="US" className="text-gray-800">United States</option>
+              <option value="CA" className="text-gray-800">Canada</option>
+              <option value="UK" className="text-gray-800">United Kingdom</option>
+              <option value="AU" className="text-gray-800">Australia</option>
+            </select>
+          </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <a
-              href="tel:988"
+              href={currentEmergencyContacts.crisis.url}
               className="flex items-center p-4 bg-white/20 rounded-xl hover:bg-white/30 transition-colors"
             >
               <span className="text-2xl mr-3">📞</span>
               <div>
-                <div className="font-semibold">Crisis Hotline</div>
-                <div className="text-sm opacity-90">988 - Available 24/7</div>
+                <div className="font-semibold">{currentEmergencyContacts.crisis.name}</div>
+                <div className="text-sm opacity-90">{currentEmergencyContacts.crisis.description}</div>
               </div>
             </a>
             <a
-              href="https://www.samhsa.gov/find-help/national-helpline"
+              href={currentEmergencyContacts.addiction.url}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center p-4 bg-white/20 rounded-xl hover:bg-white/30 transition-colors"
             >
               <span className="text-2xl mr-3">💬</span>
               <div>
-                <div className="font-semibold">SAMHSA Helpline</div>
-                <div className="text-sm opacity-90">1-800-662-4357</div>
+                <div className="font-semibold">{currentEmergencyContacts.addiction.name}</div>
+                <div className="text-sm opacity-90">{currentEmergencyContacts.addiction.description}</div>
               </div>
             </a>
           </div>
