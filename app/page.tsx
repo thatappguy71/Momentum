@@ -293,6 +293,7 @@ export default function RecoveryTracker() {
             </div>
           )}
         </div>
+
         {/* Habits Grid */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
@@ -420,16 +421,16 @@ export default function RecoveryTracker() {
                 }`}
               >
                 <div className="flex items-center mb-2">
-                  <span className={\`text-xl mr-2 ${
+                  <span className={`text-xl mr-2 ${
                     milestone.achieved ? 'text-yellow-600' : 'text-gray-400'
                   }`}>🏆</span>
-                  <h4 className={\`font-semibold ${
+                  <h4 className={`font-semibold ${
                     milestone.achieved ? 'text-yellow-800' : 'text-gray-600'
                   }`}>
                     {milestone.title}
                   </h4>
                 </div>
-                <p className={\`text-sm ${
+                <p className={`text-sm ${
                   milestone.achieved ? 'text-yellow-700' : 'text-gray-500'
                 }`}>
                   {milestone.description}
