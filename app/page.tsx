@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, CheckCircle, Heart, Shield, Users, Trophy, Phone, MessageCircle } from 'lucide-react';
 
 interface Habit {
   id: string;
@@ -68,11 +67,11 @@ export default function RecoveryTracker() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'wellness': return <Heart className="w-4 h-4" />;
-      case 'support': return <Users className="w-4 h-4" />;
-      case 'mindfulness': return <Shield className="w-4 h-4" />;
-      case 'physical': return <Trophy className="w-4 h-4" />;
-      default: return <CheckCircle className="w-4 h-4" />;
+      case 'wellness': return <span className="w-4 h-4 text-center">❤️</span>;
+      case 'support': return <span className="w-4 h-4 text-center">👥</span>;
+      case 'mindfulness': return <span className="w-4 h-4 text-center">🛡️</span>;
+      case 'physical': return <span className="w-4 h-4 text-center">🏆</span>;
+      default: return <span className="w-4 h-4 text-center">✅</span>;
     }
   };
 
@@ -102,7 +101,7 @@ export default function RecoveryTracker() {
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-100">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <Calendar className="w-8 h-8 text-blue-600 mr-3" />
+              <span className="text-3xl mr-3">📅</span>
               <h2 className="text-2xl font-bold text-gray-800">Days in Recovery</h2>
             </div>
             <div className="text-6xl font-bold text-blue-600 mb-4">{daysSober}</div>
@@ -167,7 +166,7 @@ export default function RecoveryTracker() {
                       : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
                   }`}
                 >
-                  <CheckCircle className="w-6 h-6" />
+                  <span className="text-xl">{habit.completedToday ? '✅' : '⭕'}</span>
                 </button>
               </div>
               <div className="flex items-center justify-between">
@@ -198,9 +197,9 @@ export default function RecoveryTracker() {
                 }`}
               >
                 <div className="flex items-center mb-2">
-                  <Trophy className={`w-5 h-5 mr-2 ${
+                  <span className={`text-xl mr-2 ${
                     milestone.achieved ? 'text-yellow-600' : 'text-gray-400'
-                  }`} />
+                  }`}>🏆</span>
                   <h4 className={`font-semibold ${
                     milestone.achieved ? 'text-yellow-800' : 'text-gray-600'
                   }`}>
@@ -226,7 +225,7 @@ export default function RecoveryTracker() {
               href="tel:988"
               className="flex items-center p-4 bg-white/20 rounded-xl hover:bg-white/30 transition-colors"
             >
-              <Phone className="w-6 h-6 mr-3" />
+              <span className="text-2xl mr-3">📞</span>
               <div>
                 <div className="font-semibold">Crisis Hotline</div>
                 <div className="text-sm opacity-90">988 - Available 24/7</div>
@@ -238,7 +237,7 @@ export default function RecoveryTracker() {
               rel="noopener noreferrer"
               className="flex items-center p-4 bg-white/20 rounded-xl hover:bg-white/30 transition-colors"
             >
-              <MessageCircle className="w-6 h-6 mr-3" />
+              <span className="text-2xl mr-3">💬</span>
               <div>
                 <div className="font-semibold">SAMHSA Helpline</div>
                 <div className="text-sm opacity-90">1-800-662-4357</div>
