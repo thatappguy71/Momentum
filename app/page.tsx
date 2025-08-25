@@ -29,19 +29,19 @@ export default function RecoveryTracker() {
   ]);
 
   const [sobrietyDate, setSobrietyDate] = useState<string>('2024-01-01');
-  const [daysSober, setDaysSober] = useState<number>(0);
+  const [daysSober, setDaysSober] = useState<number | null>(null);
 
   const milestones: Milestone[] = [
     { days: 1, title: 'First Day', description: 'You took the first step', achieved: daysSober >= 1 },
-    { days: 7, title: 'One Week', description: 'Seven days of strength', achieved: daysSober >= 7 },
-    { days: 30, title: 'One Month', description: 'A full month of recovery', achieved: daysSober >= 30 },
-    { days: 90, title: '90 Days', description: 'Three months of progress', achieved: daysSober >= 90 },
-    { days: 180, title: '6 Months', description: 'Half a year of healing', achieved: daysSober >= 180 },
-    { days: 365, title: 'One Year', description: 'A full year of recovery', achieved: daysSober >= 365 },
-  ];
-
-  useEffect(() => {
-    const today = new Date();
+    { days: 7, title: 'One Week', description: 'Seven days of strength', achieved: daysSober !== null && daysSober >= 7 },
+    { days: 30, title: 'One Month', description: 'A full month of recovery', achieved: daysSober !== null && daysSober >= 30 },
+    { days: 60, title: '60 Days', description: 'Two months strong', achieved: daysSober !== null && daysSober >= 60 },
+    { days: 90, title: '90 Days', description: 'Three months of progress', achieved: daysSober !== null && daysSober >= 90 },
+    { days: 180, title: '6 Months', description: 'Half a year of healing', achieved: daysSober !== null && daysSober >= 180 },
+    { days: 270, title: '9 Months', description: 'Nine months of growth', achieved: daysSober !== null && daysSober >= 270 },
+    { days: 365, title: '1 Year', description: 'A full year of recovery', achieved: daysSober !== null && daysSober >= 365 },
+    { days: 730, title: '2 Years', description: 'Two years of strength', achieved: daysSober !== null && daysSober >= 730 },
+    { days: 1095, title: '3 Years', description: 'Three years of transformation', achieved: daysSober !== null && daysSober >= 1095 },
     const startDate = new Date(sobrietyDate);
     const diffTime = Math.abs(today.getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -111,6 +111,9 @@ export default function RecoveryTracker() {
               <h2 className="text-2xl font-bold text-gray-800">Days in Recovery</h2>
             </div>
             <div className="text-6xl font-bold text-blue-600 mb-4">{daysSober}</div>
+            <div className="text-6xl font-bold text-blue-600 mb-4">
+              {daysSober === null ? '...' : daysSober}
+            </div>
             <p className="text-gray-600 mb-6">
               Since {new Date(sobrietyDate).toLocaleDateString('en-US', { 
                 year: 'numeric', 
