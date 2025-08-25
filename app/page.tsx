@@ -55,6 +55,28 @@ export default function RecoveryTracker() {
   const [showAddHabit, setShowAddHabit] = useState<boolean>(false);
   const [newHabitName, setNewHabitName] = useState<string>('');
   const [newHabitCategory, setNewHabitCategory] = useState<'wellness' | 'support' | 'mindfulness' | 'physical' | 'custom'>('custom');
+  const [userRegion, setUserRegion] = useState<string>('US');
+
+  const regions: Record<string, RegionSupport> = {
+    US: {
+      crisis: { name: '988 Lifeline', phone: '988', description: 'Crisis support', url: 'tel:988' },
+      addiction: { name: 'SAMHSA Helpline', phone: '1-800-662-4357', description: 'Addiction support', url: 'tel:1-800-662-4357' }
+    },
+    CA: {
+      crisis: { name: 'Crisis Services Canada', phone: '1-833-456-4566', description: 'Crisis support', url: 'tel:1-833-456-4566' },
+      addiction: { name: 'Drug Rehab Services', phone: '1-877-254-3348', description: 'Addiction support', url: 'tel:1-877-254-3348' }
+    },
+    UK: {
+      crisis: { name: 'Samaritans', phone: '116 123', description: 'Crisis support', url: 'tel:116123' },
+      addiction: { name: 'Frank Drug Helpline', phone: '0300 123 6600', description: 'Addiction support', url: 'tel:03001236600' }
+    },
+    AU: {
+      crisis: { name: 'Lifeline Australia', phone: '13 11 14', description: 'Crisis support', url: 'tel:131114' },
+      addiction: { name: 'DirectLine', phone: '1800 888 236', description: 'Addiction support', url: 'tel:1800888236' }
+    }
+  };
+
+  const currentEmergencyContacts = regions[userRegion] || regions.US;
 
   const milestones: Milestone[] = [
     { days: 1, title: 'First Day', description: 'You took the first step', achieved: daysSober !== null && daysSober >= 1 },
