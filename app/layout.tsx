@@ -5,7 +5,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Recovery Journey - Habit Tracker',
+  title: 'Momentum - Habit Tracker',
   description: 'A supportive habit tracking app for people in recovery from addiction',
 };
 
