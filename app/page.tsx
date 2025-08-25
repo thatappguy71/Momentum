@@ -32,7 +32,7 @@ export default function RecoveryTracker() {
   const [daysSober, setDaysSober] = useState<number | null>(null);
 
   const milestones: Milestone[] = [
-    { days: 1, title: 'First Day', description: 'You took the first step', achieved: daysSober >= 1 },
+    { days: 1, title: 'First Day', description: 'You took the first step', achieved: daysSober !== null && daysSober >= 1 },
     { days: 7, title: 'One Week', description: 'Seven days of strength', achieved: daysSober !== null && daysSober >= 7 },
     { days: 30, title: 'One Month', description: 'A full month of recovery', achieved: daysSober !== null && daysSober >= 30 },
     { days: 60, title: '60 Days', description: 'Two months strong', achieved: daysSober !== null && daysSober >= 60 },
@@ -42,6 +42,10 @@ export default function RecoveryTracker() {
     { days: 365, title: '1 Year', description: 'A full year of recovery', achieved: daysSober !== null && daysSober >= 365 },
     { days: 730, title: '2 Years', description: 'Two years of strength', achieved: daysSober !== null && daysSober >= 730 },
     { days: 1095, title: '3 Years', description: 'Three years of transformation', achieved: daysSober !== null && daysSober >= 1095 },
+  ];
+
+  useEffect(() => {
+    const today = new Date();
     const startDate = new Date(sobrietyDate);
     const diffTime = Math.abs(today.getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -110,7 +114,6 @@ export default function RecoveryTracker() {
               <span className="text-3xl mr-3">📅</span>
               <h2 className="text-2xl font-bold text-gray-800">Days in Recovery</h2>
             </div>
-            <div className="text-6xl font-bold text-blue-600 mb-4">{daysSober}</div>
             <div className="text-6xl font-bold text-blue-600 mb-4">
               {daysSober === null ? '...' : daysSober}
             </div>
