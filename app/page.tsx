@@ -9,6 +9,7 @@ interface Habit {
   streak: number;
   lastCompleted: string | null;
   completedToday: boolean;
+  isCustom?: boolean;
 }
 
 interface Milestone {
@@ -18,18 +19,29 @@ interface Milestone {
   achieved: boolean;
 }
 
+interface MoodEntry {
+  date: string;
+  mood: number; // 1-5 scale
+  note?: string;
+}
 export default function RecoveryTracker() {
   const [habits, setHabits] = useState<Habit[]>([
-    { id: '1', name: 'Morning Meditation', category: 'mindfulness', streak: 0, lastCompleted: null, completedToday: false },
-    { id: '2', name: 'Attend Support Meeting', category: 'support', streak: 0, lastCompleted: null, completedToday: false },
-    { id: '3', name: 'Exercise/Walk', category: 'physical', streak: 0, lastCompleted: null, completedToday: false },
-    { id: '4', name: 'Journal Writing', category: 'wellness', streak: 0, lastCompleted: null, completedToday: false },
-    { id: '5', name: 'Call Sponsor/Friend', category: 'support', streak: 0, lastCompleted: null, completedToday: false },
-    { id: '6', name: 'Gratitude Practice', category: 'mindfulness', streak: 0, lastCompleted: null, completedToday: false },
+    { id: '1', name: 'Morning Meditation', category: 'mindfulness', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
+    { id: '2', name: 'Attend Support Meeting', category: 'support', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
+    { id: '3', name: 'Exercise/Walk', category: 'physical', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
+    { id: '4', name: 'Journal Writing', category: 'wellness', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
+    { id: '5', name: 'Call Sponsor/Friend', category: 'support', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
+    { id: '6', name: 'Gratitude Practice', category: 'mindfulness', streak: 0, lastCompleted: null, completedToday: false, isCustom: false },
   ]);
 
   const [sobrietyDate, setSobrietyDate] = useState<string>('2024-01-01');
   const [daysSober, setDaysSober] = useState<number | null>(null);
+  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
+  const [todaysMood, setTodaysMood] = useState<number | null>(null);
+  const [moodNote, setMoodNote] = useState<string>('');
+  const [showAddHabit, setShowAddHabit] = useState<boolean>(false);
+  const [newHabitName, setNewHabitName] = useState<string>('');
+  const [newHabitCategory, setNewHabitCategory] = useState<'wellness' | 'support' | 'mindfulness' | 'physical' | 'custom'>('custom');
 
   const milestones: Milestone[] = [
     { days: 1, title: 'First Day', description: 'You took the first step', achieved: daysSober !== null && daysSober >= 1 },
@@ -50,6 +62,14 @@ export default function RecoveryTracker() {
     const diffTime = Math.abs(today.getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     setDaysSober(diffDays);
+
+    // Check if mood was already logged today
+    const todayString = today.toDateString();
+    const todaysEntry = moodEntries.find(entry => entry.date === todayString);
+    if (todaysEntry) {
+      setTodaysMood(todaysEntry.mood);
+      setMoodNote(todaysEntry.note || '');
+    }
   }, [sobrietyDate]);
 
   const toggleHabit = (habitId: string) => {
@@ -69,12 +89,50 @@ export default function RecoveryTracker() {
     }));
   };
 
+  const addCustomHabit = () => {
+    if (newHabitName.trim()) {
+      const newHabit: Habit = {
+        id: Date.now().toString(),
+        name: newHabitName.trim(),
+        category: newHabitCategory,
+        streak: 0,
+        lastCompleted: null,
+        completedToday: false,
+        isCustom: true
+      };
+      setHabits(prev => [...prev, newHabit]);
+      setNewHabitName('');
+      setShowAddHabit(false);
+    }
+  };
+
+  const removeHabit = (habitId: string) => {
+    setHabits(prev => prev.filter(habit => habit.id !== habitId));
+  };
+
+  const logMood = () => {
+    if (todaysMood !== null) {
+      const today = new Date().toDateString();
+      const newEntry: MoodEntry = {
+        date: today,
+        mood: todaysMood,
+        note: moodNote.trim() || undefined
+      };
+      
+      setMoodEntries(prev => {
+        const filtered = prev.filter(entry => entry.date !== today);
+        return [...filtered, newEntry];
+      });
+    }
+  };
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'wellness': return <span className="w-4 h-4 text-center">❤️</span>;
       case 'support': return <span className="w-4 h-4 text-center">👥</span>;
       case 'mindfulness': return <span className="w-4 h-4 text-center">🛡️</span>;
       case 'physical': return <span className="w-4 h-4 text-center">🏆</span>;
+      case 'custom': return <span className="w-4 h-4 text-center">⭐</span>;
       default: return <span className="w-4 h-4 text-center">✅</span>;
     }
   };
@@ -85,12 +143,36 @@ export default function RecoveryTracker() {
       case 'support': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'mindfulness': return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'physical': return 'bg-green-100 text-green-700 border-green-200';
+      case 'custom': return 'bg-amber-100 text-amber-700 border-amber-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  const getMoodEmoji = (mood: number) => {
+    switch (mood) {
+      case 1: return '😢';
+      case 2: return '😕';
+      case 3: return '😐';
+      case 4: return '😊';
+      case 5: return '😄';
+      default: return '😐';
+    }
+  };
+
+  const getMoodLabel = (mood: number) => {
+    switch (mood) {
+      case 1: return 'Very Low';
+      case 2: return 'Low';
+      case 3: return 'Neutral';
+      case 4: return 'Good';
+      case 5: return 'Great';
+      default: return 'Neutral';
     }
   };
 
   const completedHabitsToday = habits.filter(h => h.completedToday).length;
   const totalHabits = habits.length;
+  const recentMoods = moodEntries.slice(-7).reverse();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -151,8 +233,123 @@ export default function RecoveryTracker() {
           </div>
         </div>
 
+        {/* Mood Tracking */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">How are you feeling today?</h3>
+          
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              {[1, 2, 3, 4, 5].map((mood) => (
+                <button
+                  key={mood}
+                  onClick={() => setTodaysMood(mood)}
+                  className={`p-4 rounded-xl transition-all duration-200 ${
+                    todaysMood === mood
+                      ? 'bg-blue-100 border-2 border-blue-500 scale-110'
+                      : 'bg-gray-50 border-2 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="text-3xl mb-1">{getMoodEmoji(mood)}</div>
+                  <div className="text-xs text-gray-600">{getMoodLabel(mood)}</div>
+                </button>
+              ))}
+            </div>
+            
+            <textarea
+              value={moodNote}
+              onChange={(e) => setMoodNote(e.target.value)}
+              placeholder="Optional: Add a note about your mood..."
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              rows={2}
+            />
+            
+            <button
+              onClick={logMood}
+              disabled={todaysMood === null}
+              className={`mt-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                todaysMood !== null
+                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              Log Mood
+            </button>
+          </div>
+
+          {/* Recent Mood History */}
+          {recentMoods.length > 0 && (
+            <div>
+              <h4 className="font-semibold text-gray-700 mb-3">Recent Mood History</h4>
+              <div className="flex gap-2 overflow-x-auto">
+                {recentMoods.map((entry, index) => (
+                  <div key={index} className="flex-shrink-0 text-center p-2 bg-gray-50 rounded-lg">
+                    <div className="text-2xl mb-1">{getMoodEmoji(entry.mood)}</div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
         {/* Habits Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-gray-800">Daily Habits</h3>
+            <button
+              onClick={() => setShowAddHabit(true)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+            >
+              + Add Custom Habit
+            </button>
+          </div>
+
+          {/* Add Habit Modal */}
+          {showAddHabit && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+                <h4 className="text-lg font-bold text-gray-800 mb-4">Add Custom Habit</h4>
+                <input
+                  type="text"
+                  value={newHabitName}
+                  onChange={(e) => setNewHabitName(e.target.value)}
+                  placeholder="Enter habit name..."
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+                />
+                <select
+                  value={newHabitCategory}
+                  onChange={(e) => setNewHabitCategory(e.target.value as any)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+                >
+                  <option value="custom">Custom</option>
+                  <option value="wellness">Wellness</option>
+                  <option value="support">Support</option>
+                  <option value="mindfulness">Mindfulness</option>
+                  <option value="physical">Physical</option>
+                </select>
+                <div className="flex gap-3">
+                  <button
+                    onClick={addCustomHabit}
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                  >
+                    Add Habit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddHabit(false);
+                      setNewHabitName('');
+                    }}
+                    className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-2 gap-6">
           {habits.map((habit) => (
             <div
               key={habit.id}
@@ -174,16 +371,27 @@ export default function RecoveryTracker() {
                   onClick={() => toggleHabit(habit.id)}
                   className={`p-3 rounded-full transition-all duration-200 ${
                     habit.completedToday
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
-                  }`}
-                >
-                  <span className="text-xl">{habit.completedToday ? '✅' : '⭕'}</span>
-                </button>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  {habit.streak > 0 ? `${habit.streak} day streak` : 'Start your streak!'}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleHabit(habit.id)}
+                      className={`p-3 rounded-full transition-all duration-200 ${
+                        habit.completedToday
+                          ? 'bg-green-500 text-white hover:bg-green-600'
+                          : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
+                      }`}
+                    >
+                      <span className="text-xl">{habit.completedToday ? '✅' : '⭕'}</span>
+                    </button>
+                    {habit.isCustom && (
+                      <button
+                        onClick={() => removeHabit(habit.id)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        title="Remove habit"
+                      >
+                        <span className="text-sm">🗑️</span>
+                      </button>
+                    )}
+                  </div>
                 </span>
                 {habit.lastCompleted && (
                   <span className="text-xs text-gray-400">
@@ -226,6 +434,7 @@ export default function RecoveryTracker() {
                 <p className="text-xs text-gray-400 mt-1">{milestone.days} days</p>
               </div>
             ))}
+          </div>
           </div>
         </div>
 
