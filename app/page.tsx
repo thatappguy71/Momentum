@@ -1,14 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, CheckCircle, Heart, Shield, Users, Trophy } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
-import AuthForm from '../components/AuthForm';
-import { RegionSelector } from '../components/RegionSelector';
-import { ComplianceFooter } from '../components/ComplianceFooter';
-import { EmergencySupport } from '../components/EmergencySupport';
-import { regions, type Region } from '../lib/regions';
+import { Calendar, CheckCircle, Heart, Shield, Users, Trophy, Phone, MessageCircle } from 'lucide-react';
 
 interface Habit {
   id: string;
