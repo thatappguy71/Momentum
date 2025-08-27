@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 
 interface Habit {
   id: string;
@@ -104,7 +105,7 @@ export default function RecoveryTracker() {
       setTodaysMood(todaysEntry.mood);
       setMoodNote(todaysEntry.note || '');
     }
-  }, [sobrietyDate]);
+  }, [sobrietyDate, moodEntries]);
 
   const toggleHabit = (habitId: string) => {
     setHabits(prev => prev.map(habit => {
@@ -385,60 +386,60 @@ export default function RecoveryTracker() {
           )}
 
           <div className="grid md:grid-cols-2 gap-6">
-          {habits.map((habit) => (
-            <div
-              key={habit.id}
-              className={`bg-white rounded-xl shadow-lg p-6 border-2 transition-all duration-300 hover:shadow-xl ${
-                habit.completedToday ? 'border-green-300 bg-green-50' : 'border-gray-200'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div className={`p-2 rounded-lg mr-3 ${getCategoryColor(habit.category)}`}>
-                    {getCategoryIcon(habit.category)}
+            {habits.map((habit) => (
+              <div
+                key={habit.id}
+                className={`bg-white rounded-xl shadow-lg p-6 border-2 transition-all duration-300 hover:shadow-xl ${
+                  habit.completedToday ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className={`p-2 rounded-lg mr-3 ${getCategoryColor(habit.category)}`}>
+                      {getCategoryIcon(habit.category)}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800">{habit.name}</h4>
+                      <p className="text-sm text-gray-500 capitalize">{habit.category}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800">{habit.name}</h4>
-                    <p className="text-sm text-gray-500 capitalize">{habit.category}</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleHabit(habit.id)}
+                      className={`p-3 rounded-full transition-all duration-200 ${
+                        habit.completedToday
+                          ? 'bg-green-500 text-white hover:bg-green-600'
+                          : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
+                      }`}
+                    >
+                      <span className="text-xl">{habit.completedToday ? '✅' : '⭕'}</span>
+                    </button>
+                    {habit.isCustom && (
+                      <button
+                        onClick={() => removeHabit(habit.id)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        title="Remove habit"
+                      >
+                        <span className="text-sm">🗑️</span>
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => toggleHabit(habit.id)}
-                    className={`p-3 rounded-full transition-all duration-200 ${
-                      habit.completedToday
-                        ? 'bg-green-500 text-white hover:bg-green-600'
-                        : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
-                    }`}
-                  >
-                    <span className="text-xl">{habit.completedToday ? '✅' : '⭕'}</span>
-                  </button>
-                  {habit.isCustom && (
-                    <button
-                      onClick={() => removeHabit(habit.id)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                      title="Remove habit"
-                    >
-                      <span className="text-sm">🗑️</span>
-                    </button>
+                <div className="flex items-center justify-between text-sm">
+                  <span className={`font-medium ${
+                    habit.streak > 0 ? 'text-blue-600' : 'text-gray-400'
+                  }`}>
+                    🔥 {habit.streak} day streak
+                  </span>
+                  {habit.lastCompleted && (
+                    <span className="text-xs text-gray-400">
+                      Last: {new Date(habit.lastCompleted).toLocaleDateString()}
+                    </span>
                   )}
                 </div>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className={`font-medium ${
-                  habit.streak > 0 ? 'text-blue-600' : 'text-gray-400'
-                }`}>
-                  🔥 {habit.streak} day streak
-                </span>
-                {habit.lastCompleted && (
-                  <span className="text-xs text-gray-400">
-                    Last: {new Date(habit.lastCompleted).toLocaleDateString()}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         </div>
 
         {/* Milestones */}
@@ -525,3 +526,5 @@ export default function RecoveryTracker() {
         </div>
       </div>
     </div>
+  );
+}
