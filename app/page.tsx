@@ -284,7 +284,7 @@ export default function RecoveryTracker() {
                       : 'bg-gray-50 border-2 border-gray-200 hover:bg-gray-100'
                   }`}
                 >
-                  <div className="text-3xl mb-1">{getMoodEmoji(mood)}</div>
+                  <div className="text-2xl mb-1 flex items-center justify-center h-8">{getMoodEmoji(mood)}</div>
                   <div className="text-xs text-gray-600">{getMoodLabel(mood)}</div>
                 </button>
               ))}
@@ -318,7 +318,7 @@ export default function RecoveryTracker() {
               <div className="flex gap-2 overflow-x-auto">
                 {recentMoods.map((entry, index) => (
                   <div key={index} className="flex-shrink-0 text-center p-2 bg-gray-50 rounded-lg">
-                    <div className="text-2xl mb-1">{getMoodEmoji(entry.mood)}</div>
+                    <div className="text-lg mb-1 flex items-center justify-center h-6">{getMoodEmoji(entry.mood)}</div>
                     <div className="text-xs text-gray-500">
                       {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </div>
