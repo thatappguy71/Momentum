@@ -421,154 +421,6 @@ export default function RecoveryTracker() {
     ? 'bg-gray-800 border-gray-700' 
     : 'bg-white border-gray-100';
 
-  const renderMood = () => (
-    <div className="space-y-6">
-      <h3 className="text-lg font-bold">Mood & Wellness Tracking</h3>
-
-      {/* Mood Logging */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h4 className="font-semibold mb-3">How are you feeling today?</h4>
-        <div className="grid grid-cols-5 gap-2 mb-4">
-          {[
-            { emoji: '😢', label: 'Very Low', value: 1 },
-            { emoji: '😔', label: 'Low', value: 2 },
-            { emoji: '😐', label: 'Neutral', value: 3 },
-            { emoji: '😊', label: 'Good', value: 4 },
-            { emoji: '😄', label: 'Great', value: 5 }
-          ].map((mood) => (
-            <button
-              key={mood.value}
-              onClick={() => setCurrentMood(mood.value)}
-              className={`p-3 rounded-lg text-center transition-colors ${
-                currentMood === mood.value
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              <div className="text-2xl">{mood.emoji}</div>
-              <div className="text-xs mt-1">{mood.label}</div>
-            </button>
-          ))}
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Energy Level</label>
-            <select 
-              value={energyLevel} 
-              onChange={(e) => setEnergyLevel(Number(e.target.value))}
-              className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-            >
-              <option value={1}>Very Low</option>
-              <option value={2}>Low</option>
-              <option value={3}>Moderate</option>
-              <option value={4}>High</option>
-              <option value={5}>Very High</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Sleep Quality</label>
-            <select 
-              value={sleepQuality} 
-              onChange={(e) => setSleepQuality(Number(e.target.value))}
-              className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-            >
-              <option value={1}>Very Poor</option>
-              <option value={2}>Poor</option>
-              <option value={3}>Fair</option>
-              <option value={4}>Good</option>
-              <option value={5}>Excellent</option>
-            </select>
-          </div>
-        </div>
-
-        <button 
-          onClick={() => {
-            const entry = {
-              date: new Date().toISOString().split('T')[0],
-              mood: currentMood,
-              energy: energyLevel,
-              sleep: sleepQuality,
-              triggers: selectedTriggers,
-              gratitude: gratitudeEntry
-            };
-            setMoodHistory([entry, ...moodHistory]);
-            setGratitudeEntries([...gratitudeEntries, gratitudeEntry]);
-            setGratitudeEntry('');
-            alert('Mood entry saved!');
-          }}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Save Mood Entry
-        </button>
-      </div>
-
-      {/* Trigger Tracking */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h4 className="font-semibold mb-3">Identify Triggers</h4>
-        <div className="grid grid-cols-2 gap-2">
-          {['Stress', 'Loneliness', 'Boredom', 'Anger', 'Sadness', 'Anxiety', 'Social Pressure', 'Physical Pain'].map((trigger) => (
-            <button
-              key={trigger}
-              onClick={() => {
-                if (selectedTriggers.includes(trigger)) {
-                  setSelectedTriggers(selectedTriggers.filter(t => t !== trigger));
-                } else {
-                  setSelectedTriggers([...selectedTriggers, trigger]);
-                }
-              }}
-              className={`p-2 rounded-lg text-sm transition-colors ${
-                selectedTriggers.includes(trigger)
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {trigger}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Gratitude Journal */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h4 className="font-semibold mb-3">Gratitude Journal</h4>
-        <textarea
-          value={gratitudeEntry}
-          onChange={(e) => setGratitudeEntry(e.target.value)}
-          placeholder="What are you grateful for today?"
-          className="w-full p-3 border rounded-lg h-20 resize-none dark:bg-gray-700 dark:border-gray-600"
-        />
-        <div className="mt-3">
-          <h5 className="text-sm font-medium mb-2">Recent Gratitude Entries:</h5>
-          <div className="space-y-1 max-h-32 overflow-y-auto">
-            {gratitudeEntries.slice(0, 3).map((entry, index) => (
-              <div key={index} className="text-sm p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                {entry}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Mood History */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h4 className="font-semibold mb-3">Wellness History</h4>
-        <div className="space-y-2 max-h-40 overflow-y-auto">
-          {moodHistory.slice(0, 5).map((entry, index) => (
-            <div key={index} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-              <span className="text-sm">{entry.date}</span>
-              <div className="flex space-x-2 text-sm">
-                <span>Mood: {['😢', '😔', '😐', '😊', '😄'][entry.mood - 1]}</span>
-                <span>Energy: {entry.energy}/5</span>
-                <span>Sleep: {entry.sleep}/5</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
   const renderHome = () => (
     <div className="space-y-6">
       {/* Header */}
@@ -914,6 +766,83 @@ export default function RecoveryTracker() {
         </div>
         
         <textarea
+          value={moodNote}
+          onChange={(e) => setMoodNote(e.target.value)}
+          placeholder="Any additional notes about your day..."
+          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4 text-sm resize-none ${
+            darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300'
+          }`}
+          rows={3}
+        />
+
+        <button
+          onClick={logMood}
+          className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+        >
+          Save Mood Entry
+        </button>
+      </div>
+
+      {/* Gratitude Section */}
+      <div className={`${cardClasses} rounded-2xl shadow-lg p-4 border`}>
+        <h4 className="font-bold mb-4 flex items-center">
+          <span className="mr-2">🙏</span>
+          Gratitude Practice
+        </h4>
+        <textarea
+          value={newGratitude}
+          onChange={(e) => setNewGratitude(e.target.value)}
+          placeholder="What are you grateful for today?"
+          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4 text-sm resize-none ${
+            darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300'
+          }`}
+          rows={3}
+        />
+        <button
+          onClick={addGratitude}
+          className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium text-sm"
+        >
+          Add Gratitude Entry
+        </button>
+        
+        {gratitudeEntries.length > 0 && (
+          <div className="mt-4">
+            <h5 className="font-medium mb-2">Recent Gratitude:</h5>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {gratitudeEntries.slice(0, 3).map((entry) => (
+                <div key={entry.id} className={`text-sm p-2 rounded ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                  <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`}>
+                    {new Date(entry.date).toLocaleDateString()}
+                  </div>
+                  <div>{entry.text}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Recent Mood History */}
+      {recentMoods.length > 0 && (
+        <div className={`${cardClasses} rounded-2xl shadow-lg p-4 border`}>
+          <h4 className="font-bold mb-4">Recent Mood History</h4>
+          <div className="space-y-2">
+            {recentMoods.map((entry, index) => (
+              <div key={index} className={`flex justify-between items-center p-2 rounded ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <span className="text-sm">{new Date(entry.date).toLocaleDateString()}</span>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span>{getMoodEmoji(entry.mood)}</span>
+                  <span>⚡{entry.energy}</span>
+                  <span>😴{entry.sleep}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   const renderSupport = () => (
     <div className="space-y-6">
       <h3 className="text-lg font-bold">Support Network</h3>
